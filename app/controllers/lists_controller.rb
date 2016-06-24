@@ -13,20 +13,28 @@ class ListsController < ApplicationController
     end
   end
 
-    def edit
-    end
+  def edit
+    @list = List.find(params[:id])
+  end
 
-    def destroy
-      @board.lists.find(params[:id]).destroy
-      render json: {message: 'list deleted'}
-    end
+  def update
+    list = @board.lists.find(params[:id])
+    list.name = params[:list]
+    list.save
+    render json: list
+  end
+
+  def destroy
+    @board.lists.find(params[:id]).destroy
+    render json: {message: 'list deleted'}
+  end
 
   private
-    def find_board
-      @board = Board.find(params[:board_id])
-    end
+  def find_board
+    @board = Board.find(params[:board_id])
+  end
 
-    def list_params
-      params.require(:list).permit(:name)
-    end
+  def list_params
+    params.require(:list).permit(:name)
+  end
 end

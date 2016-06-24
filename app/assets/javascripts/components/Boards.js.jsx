@@ -4,6 +4,7 @@ class Boards extends React.Component {
     this.state = {boards: props.boards, show: false};
     this.deleteBoard = this.deleteBoard.bind(this);
     this.showBoard = this.showBoard.bind(this);
+    this.updateBoard = this.updateBoard.bind(this);
   }
 
   showBoard(board) {
@@ -13,6 +14,20 @@ class Boards extends React.Component {
 
   addBoard(board) {
     this.setState({ boards: [{...board}, ...this.state.boards] });
+  }
+
+  updateBoard(id, board) {
+    $.ajax({
+      url: `/boards/${id}`,
+      type: 'PUT',
+      data: { board: {...board} }
+    }).success( board => {
+      let boards =this.state.boards;
+      let editBoard = boards.find( b => b.id === board.id);
+      editBoard.name = board.name;
+      editBoard.description = board.description;
+      this.setState({boards: boards});
+    });
   }
 
   deleteBoard(id) {
@@ -43,16 +58,16 @@ class Boards extends React.Component {
       // render the show html
       return(
         <div>
+          <button className='btn left' onClick={this.boardBack.bind(this)}>Back</button><br></br>
           <h3>{this.state.board.name}</h3><br></br>
           <i>{this.state.board.description}</i><br></br>
-          <button className='btn' onClick={this.boardBack.bind(this)}>Back</button><br></br>
           <hr />
           <Lists boardId={this.state.board.id} />
         </div>
       )
     } else {
       let boards = this.state.boards.map( board => {
-        return(<Board key={`board-${board.id}`} {...board} deleteBoard={this.deleteBoard} showBoard={this.showBoard}/>);
+        return(<Board key={`board-${board.id}`} {...board} deleteBoard={this.deleteBoard} showBoard={this.showBoard} updateBoard={this.updateBoard}/>);
       });
 
       return (

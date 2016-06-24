@@ -4,6 +4,7 @@ class Lists extends React.Component {
     this.state = { lists: [], show: false };
     this.showList = this.showList.bind(this)
     this.deleteList = this.deleteList.bind(this)
+    this.updateList = this.updateList.bind(this)
   }
 
   showList(list) {
@@ -18,8 +19,7 @@ class Lists extends React.Component {
     }).done( lists => {
       this.setState({ lists })
     }).fail( data => {
-      // todo: handle this better
-      alert('Failed grabbing board lists')
+      Materialize.toast('Could not GET lists', 4000)
     });
   }
 
@@ -42,6 +42,25 @@ class Lists extends React.Component {
     });
   }
 
+  updateList(id, name) {
+    $.ajax({
+      url: `/boards/${this.props.boardId}/lists/${id}`,
+      type: 'PUT',
+      data: { list: { name } }
+    }).success( list => {
+      let lists = this.state.lists;
+      let editList = lists.find( l => l.id === list.id);
+      editList.name = list.name;
+      editList.description = list.description;
+      this.setState({
+        lists: [
+          { ...editList},
+          ...lists
+        ]
+      });
+    });
+  }
+
   addList(e) {
     e.preventDefault();
     $.ajax({
@@ -53,14 +72,13 @@ class Lists extends React.Component {
       this.refs.addList.reset();
       this.setState({ lists: [{...list}, ...this.state.lists ] })
     }).fail( data => {
-      // to do: handle this better
-      alert('List not saved.');
+      Materialize.toast('List Not Saved', 4000);
     }) 
   }
 
   render() {
     let lists = this.state.lists.map( list => {
-      return(<List key={`list-${list.id}`} {...list} deleteList={this.deleteList} showList={this.showList}/>);
+      return(<List boardId={this.props.boardId} key={`list-${list.id}`} {...list} updateList={this.updateList} deleteList={this.deleteList} showList={this.showList}/>);
     });
     return(
       <div>

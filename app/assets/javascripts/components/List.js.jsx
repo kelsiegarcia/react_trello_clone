@@ -1,36 +1,67 @@
 class List extends React.Component {
   constructor(props) {
     super(props);  
-    this.state = { items: [] };  
+    this.state = { items: [], editing: false };
+    this.editState = this.editState.bind(this);
+    this.displayState = this.displayState.bind(this);
+    this.updateState = this.updateState.bind(this);
+
   }
 
-  componentWillMount(){
-    // todo: make a ajax call to grab all the lists items
-    // on success - set state of all the items
+  componentWillMount() {
+    $.ajax({
+      url: `/items`,
+      type: 'GET'
+    }).success( items => {
+      this.setState({ items: items })
+    }).fail( error => {
+      console.log(error)
+    })
+  }
+
+  editState() {
+    this.setState({ editing: true })
+  }
+
+  displayState() {
+    this.setState()
+  }
+
+  updateState() {
+    this.setState({ editing: false})
   }
 
   render() {
     let items = this.state.items.map( item => {
-      // this should be a new component
-      return(<h3>{item.name}</h3>)
-    });
-    return(
-      <div>
-        <div className="col s12 m6" onClick={() => this.props.showList(this.props)} >
+      return(<Item key={`item-${item.id}` } {...item} />)
+    })
+    if(this.state.editing === true) {
+      return(
+        <div className="col s12 m6">
           <div className="card white-grey darken-1">
             <div className="card-content red-text">
-              <span className="card-title">{this.props.name}</span>
-              <p>{this.props.description}</p>
-              <hr />
-                {items}
-            </div>
-            <div className="card-action">
-              <button className='btn'>Edit List</button>
-              <button className='btn red' onClick={() => this.props.deleteList(this.props.id)}>Delete List</button>
+              <span className="card-title"></span>
+              <form>
+              <input defaultValue={this.props.name} ref='name' />
+              <button className='btn blue' onClick={ () => this.props.updateList(this.props.id, this.refs.name.value)}>update list</button>
+              <button className='btn red' onClick={this.displayState}>Cancel</button>
+              </form>
             </div>
           </div>
         </div>
-      </div>
-    );
+      )
+    } else {
+      return( 
+        <div className="card-action col m6">
+          <p>List Name: {this.props.name}</p>
+          <div className='col m2'>
+            <ul>
+              {items}
+            </ul>
+          </div>
+          <button className='btn blue' onClick={this.editState}>Edit</button>
+        </div>
+      )
+    }
   }
 }
