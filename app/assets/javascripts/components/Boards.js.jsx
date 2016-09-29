@@ -5,6 +5,7 @@ class Boards extends React.Component {
     this.deleteBoard = this.deleteBoard.bind(this);
     this.showBoard = this.showBoard.bind(this);
     this.updateBoard = this.updateBoard.bind(this);
+    this.addBoard = this.addBoard.bind(this);
   }
 
   showBoard(board) {

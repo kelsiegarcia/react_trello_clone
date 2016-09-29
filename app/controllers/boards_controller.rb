@@ -5,6 +5,7 @@ class BoardsController < ApplicationController
 
   def create
     @board = Board.create(board_params)
+    # binding.pry
     if @board.save
       render json: @board
     else

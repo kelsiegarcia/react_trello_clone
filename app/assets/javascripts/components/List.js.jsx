@@ -1,17 +1,19 @@
 class List extends React.Component {
   constructor(props) {
-    super(props);  
+    super(props);
     this.state = { items: [], editing: false };
     this.editState = this.editState.bind(this);
     this.displayState = this.displayState.bind(this);
     this.updateState = this.updateState.bind(this);
+    // this.getList = this.getList.bind(this);
 
   }
 
   componentWillMount() {
     $.ajax({
       url: `/items`,
-      type: 'GET'
+      type: 'GET',
+      data: { list_id: this.props.id }
     }).success( items => {
       this.setState({ items: items })
     }).fail( error => {
@@ -23,13 +25,23 @@ class List extends React.Component {
     this.setState({ editing: true })
   }
 
-  displayState() {
-    this.setState()
+  displayState(e) {
+    e.preventDefault ()
+    this.setState({ editing: false })
   }
 
   updateState() {
-    this.setState({ editing: false})
+    this.setState()
   }
+
+  // grabList(e, id, name) {
+  //   e.preventDefault()
+  //   this.refs.name.value =
+  //   this.props.updateList()
+  //
+  //
+  //
+  // }
 
   render() {
     let items = this.state.items.map( item => {
@@ -43,7 +55,7 @@ class List extends React.Component {
               <span className="card-title"></span>
               <form>
               <input defaultValue={this.props.name} ref='name' />
-              <button className='btn blue' onClick={ () => this.props.updateList(this.props.id, this.refs.name.value)}>update list</button>
+              <button className='btn blue' onClick={ () => this.props.updateList(this.refs.name.value, event)}>update list</button>
               <button className='btn red' onClick={this.displayState}>Cancel</button>
               </form>
             </div>
@@ -51,9 +63,9 @@ class List extends React.Component {
         </div>
       )
     } else {
-      return( 
+      return(
         <div className="card-action col m6">
-          <p>List Name: {this.props.name}</p>
+          <p>{this.props.name}</p>
           <div className='col m2'>
             <ul>
               {items}

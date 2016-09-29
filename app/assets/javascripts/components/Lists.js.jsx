@@ -15,7 +15,7 @@ class Lists extends React.Component {
     $.ajax({
       url: `/boards/${this.props.boardId}/lists`,
       type: 'GET',
-      dataType: 'JSON'      
+      dataType: 'JSON'
     }).done( lists => {
       this.setState({ lists })
     }).fail( data => {
@@ -42,7 +42,8 @@ class Lists extends React.Component {
     });
   }
 
-  updateList(id, name) {
+  updateList(name, e) {
+    e.preventDefault();
     $.ajax({
       url: `/boards/${this.props.boardId}/lists/${id}`,
       type: 'PUT',
@@ -50,17 +51,15 @@ class Lists extends React.Component {
     }).success( list => {
       let lists = this.state.lists;
       let editList = lists.find( l => l.id === list.id);
+      debugger
       editList.name = list.name;
       editList.description = list.description;
-      this.setState({
-        lists: [
-          { ...editList},
-          ...lists
-        ]
-      });
+      this.setState({lists: lists});
+      }).fail( data => {
+      Materialize.toast('List Not Saved', 4000);
     });
   }
-
+s
   addList(e) {
     e.preventDefault();
     $.ajax({
@@ -73,7 +72,7 @@ class Lists extends React.Component {
       this.setState({ lists: [{...list}, ...this.state.lists ] })
     }).fail( data => {
       Materialize.toast('List Not Saved', 4000);
-    }) 
+    })
   }
 
   render() {

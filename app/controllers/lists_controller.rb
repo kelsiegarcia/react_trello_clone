@@ -1,9 +1,10 @@
 class ListsController < ApplicationController
   before_action :find_board
   def index
-    render json: @board.lists
+    @lists = @board.lists
+    render json: @lists
   end
-  
+
   def create
     @list = @board.lists.new(list_params)
     if @list.save
@@ -18,10 +19,13 @@ class ListsController < ApplicationController
   end
 
   def update
-    list = @board.lists.find(params[:id])
-    list.name = params[:list]
-    list.save
-    render json: list
+    @list = List.find(params[:id])
+    binding.pry
+    if @list.update(list_params)
+      render json: @list
+    else
+      render json: {errors: @list.errors.full_messages}
+    end
   end
 
   def destroy
